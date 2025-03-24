@@ -11,9 +11,13 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss'
 })
+export class LoginPageComponent {
   private fb = inject(FormBuilder);
+
+  form: FormGroup = this.fb.group({
     username: ['', []],
     password: ['', []]
+  });
 
   onSubmit(event: Event): void {
     console.log(this.form.value);
