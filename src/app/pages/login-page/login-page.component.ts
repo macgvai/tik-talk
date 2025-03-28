@@ -1,7 +1,8 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnDestroy} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../auth/auth.service';
 import {Router} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
@@ -13,10 +14,11 @@ import {Router} from '@angular/router';
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss'
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements OnDestroy{
   fb = inject(FormBuilder);
   authService = inject(AuthService)
   router = inject(Router)
+  login$!: Subscription
 
   form: FormGroup = this.fb.group({
     username: ['', [Validators.required]],
@@ -25,11 +27,15 @@ export class LoginPageComponent {
 
   onSubmit(): void {
     if (this.form.valid) {
-      this.authService.login(this.form.value).subscribe(
+      this.login$ = this.authService.login(this.form.value).subscribe(
         res => {
           this.router.navigate([''])
         }
       )
     }
+  }
+
+  ngOnDestroy(): void {
+    this.login$.unsubscribe();
   }
 }
