@@ -6,63 +6,71 @@ import {Router} from '@angular/router';
 import {CookieService} from 'ngx-cookie-service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class AuthService {
-  http = inject(HttpClient)
-  cookieService = inject(CookieService)
-  router = inject(Router)
+    http = inject(HttpClient)
+    cookieService = inject(CookieService)
+    router = inject(Router)
 
-  baseApiUrl = 'https://icherniakov.ru/yt-course/auth/'
-  token: string | null = null
-  refreshToken: string | null = null
+    baseApiUrl = 'https://icherniakov.ru/yt-course/auth/'
+    token: string | null = null
+    refreshToken: string | null = null
 
-  get isAuth() {
-    if (!this.token) {
-      this.token = this.cookieService.get('token')
+    get isAuth() {
+        if (!this.token) {
+            this.token = this.cookieService.get('token')
+            this.refreshToken = this.cookieService.get('refreshToken')
+        }
+
+        return !!this.token;
     }
 
-    return !!this.token;
-  }
+    login(payload: { username: string, password: string }) {
+        const fd = new FormData()
+        fd.append('username', payload.username)
+        fd.append('password', payload.password)
 
-  login(payload: { username: string, password: string }) {
-    const fd = new FormData()
-    fd.append('username', payload.username)
-    fd.append('password', payload.password)
+        return this.http.post<TokenResponse>(
+            `${this.baseApiUrl}token`,
+            fd
+        ).pipe(
+            tap(
+                res => this.saveTokens(res)
+            ),
+        );
+    }
 
-    return this.http.post<TokenResponse>(
-      `${this.baseApiUrl}token`,
-      fd
-      ).pipe(
-        tap(val => {
-          this.token = val.access_token
-          this.refreshToken = val.refresh_token
+    refreshAuthToken = () => {
+        return this.http.post<TokenResponse>(
+            `${this.baseApiUrl}refresh`,
+            {
+                refreshToken: this.refreshToken
+            }
+        ).pipe(
+            tap(
+                res => this.saveTokens(res)
+            ),
+            catchError(err => {
+                this.logout()
+                return throwError(err)
+            })
+        )
+    }
 
-          this.cookieService.set('token', this.token)
-          this.cookieService.set('refreshToken', this.refreshToken)
-        })
-      );
-  }
+    logout() {
+        this.cookieService.deleteAll()
+        this.token = null
+        this.refreshToken = null
+        this.router.navigate(['/login'])
+    }
 
-  refreshAuthToken = () => {
-    return this.http.post<TokenResponse>(
-      `${this.baseApiUrl}token`,
-      {
-        refreshToken: this.refreshToken
-      }
-    ).pipe(
-      catchError(err => {
-        this.logout()
-        return throwError(err)
-      })
-    )
-  }
+    saveTokens(res: TokenResponse) {
+        this.token = res.access_token
+        this.refreshToken = res.refresh_token
 
-  logout() {
-    this.cookieService.deleteAll()
-    this.token = null
-    this.refreshToken = null
-    this.router.navigate(['/login'])
-  }
+        this.cookieService.set('token', this.token)
+        this.cookieService.set('refreshToken', this.refreshToken)
+    }
 
 }
