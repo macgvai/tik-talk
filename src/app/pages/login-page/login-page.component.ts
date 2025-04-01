@@ -1,41 +1,52 @@
-import {Component, inject, OnDestroy} from '@angular/core';
+import {Component, effect, inject, OnDestroy, signal} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../auth/auth.service';
 import {Router} from '@angular/router';
-import {Subscription} from 'rxjs';
+import {single, Subscription} from 'rxjs';
+import {NgClass} from '@angular/common';
+import {SvgImgComponent} from '../../common-ui/svg-img/svg-img.component';
 
 @Component({
-  selector: 'app-login-page',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.scss'
+    selector: 'app-login-page',
+    standalone: true,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        NgClass,
+        SvgImgComponent
+    ],
+    templateUrl: './login-page.component.html',
+    styleUrl: './login-page.component.scss'
 })
-export class LoginPageComponent implements OnDestroy{
-  fb = inject(FormBuilder);
-  authService = inject(AuthService)
-  router = inject(Router)
-  login$!: Subscription
-
-  form: FormGroup = this.fb.group({
-    username: ['', [Validators.required]],
-    password: ['', [Validators.required]]
-  });
-
-  onSubmit(): void {
-    if (this.form.valid) {
-      this.login$ = this.authService.login(this.form.value).subscribe(
-        res => {
-          this.router.navigate([''])
-        }
-      )
+export class LoginPageComponent implements OnDestroy {
+    constructor() {
+        effect(() => {
+            console.log(`showPassword: ${this.showPassword()}`);
+        });
     }
-  }
 
-  ngOnDestroy(): void {
-    this.login$.unsubscribe();
-  }
+    fb = inject(FormBuilder);
+    authService = inject(AuthService)
+    router = inject(Router)
+    login$!: Subscription
+    showPassword = signal(false)
+
+    form: FormGroup = this.fb.group({
+        username: ['', [Validators.required]],
+        password: ['', [Validators.required]]
+    });
+
+    onSubmit(): void {
+        if (this.form.valid) {
+            this.login$ = this.authService.login(this.form.value).subscribe(
+                res => {
+                    this.router.navigate([''])
+                }
+            )
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.login$.unsubscribe();
+    }
 }
