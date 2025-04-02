@@ -17,4 +17,21 @@
     line-height: 24px;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;width: 100%;
+    &:hover {
+        background-color: var(--gray-color);
+    }
 }
+
+.menu_btn-icon {
+    color: var(--primary-color);
+    width: 16.640625px;
+    height: 16.640625px;
+}
+
+.menu_btn-descr {
+    margin-left: 10px;
+}
+
+
