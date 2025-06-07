@@ -1,0 +1,12 @@
+version: '1'
+services:
+    my-app:
+        build: .  # собирает образ из Dockerfile в текущей папке
+        ports:
+            - "4200:4200"
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+
