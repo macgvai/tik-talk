@@ -6,10 +6,14 @@ import {Component, Input} from '@angular/core';
     imports: [],
     template: `
         <svg>
-            <use [attr.href]="'/assets/imgs/svg/sprite.svg#' + icon"></use>
+            <use [attr.href]="url"></use>
         </svg>`,
     styles: ['']
 })
 export class SvgImgComponent {
     @Input() icon: string = ''
+
+    get url(): string {
+        return `/assets/imgs/svg/sprite.svg#${this.icon}`;
+    }
 }

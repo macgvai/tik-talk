@@ -46,6 +46,12 @@ export class LoginPageComponent implements OnDestroy {
         }
     }
 
+    buttonClick(event: MouseEvent) {
+        debugger
+        event.preventDefault()
+        this.showPassword.set(!this.showPassword())
+    }
+
     ngOnDestroy(): void {
         this.login$.unsubscribe();
     }

@@ -17,15 +17,18 @@ export class SideBarComponent {
     menuButtons: MenuButtonInterface[] = [
         {
             name: 'Моя страница',
-            icon: 'telegram'
+            icon: 'home',
+            link: ''
         },
         {
-            name: 'Моя страница2',
-            icon: 'eye'
+            name: 'Чаты',
+            icon: 'chat',
+            link: 'chats'
         },
         {
-            name: 'Моя страница3',
-            icon: 'telegram'
+            name: 'Поиск ',
+            icon: 'search',
+            link: 'search'
         }
     ]
 

@@ -16,10 +16,10 @@
                 formControlName="password">
             <button
                 class="password_eye"
-                (click)="showPassword.set(!showPassword())"
+                (click)="buttonClick($event)"
             >
                 <svg icon="eye"
-                    [ngClass]="{
+                     [ngClass]="{
                         'eye_svg': true,
                         'active': showPassword()
                     }"
